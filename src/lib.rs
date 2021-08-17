@@ -6,7 +6,7 @@
 //! [`TeeReader`] supports teeing `Read`, `BufRead` and `Seek` readers.
 
 use std::{fmt::Arguments, io::{BufRead, Read, Seek, Stderr, Write}};
-trait ReadExt: Read {
+pub trait ReadExt: Read {
     fn tee<W: Write>(self, out: W) -> TeeReader<Self, W> where Self: Sized;
     fn tee_dbg(self) -> TeeReader<Self, Stderr> where Self: Sized;
 }
@@ -21,7 +21,7 @@ impl<R: Read> ReadExt for R {
     }
 }
 
-trait WriteExt: Write {
+pub trait WriteExt: Write {
     fn tee<R: Write>(self, other: R) -> TeeWriter<Self, R> where Self: Sized;
     fn tee_dbg(self) -> TeeWriter<Self, Stderr> where Self: Sized;
 }
@@ -145,13 +145,13 @@ impl<R: Seek, W> Seek for TeeReader<R, W> {
     }
 }
 
-struct TeeWriter<L, R> {
+pub struct TeeWriter<L, R> {
     left: L,
     right: R,
 }
 
 impl<L: Write, R: Write> TeeWriter<L, R> {
-    fn new(left: L, right: R) -> Self {
+    pub fn new(left: L, right: R) -> Self {
         Self {
             left,
             right,
@@ -160,7 +160,7 @@ impl<L: Write, R: Write> TeeWriter<L, R> {
 }
 
 impl<L: Write> TeeWriter<L, Stderr> {
-    fn new_stderr(left: L) -> Self {
+    pub fn new_stderr(left: L) -> Self {
         Self {
             left,
             right: std::io::stderr(),
